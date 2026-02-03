@@ -40,9 +40,15 @@ def get_user_shopify_account():
 
 
 def get_company_shopify_account(company):
-    print("get_company_shopify_account called for company ", company)
-    account = frappe.get_doc("Shopify Account", {"company": company})
-    return account
+    try:
+        if frappe.db.exists("Shopify Account", {"company": company}):
+            account = frappe.get_doc("Shopify Account", {"company": company})
+            return account
+        else:
+            return None
+    except Exception as e:
+        print("Error getting Shopify account for company ", company, " error: ", e)
+        return None
 
 
 def create_shopify_log(**kwargs):
