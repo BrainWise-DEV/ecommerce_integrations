@@ -139,4 +139,4 @@ def _create_ecommerce_items(items: list[_dict]) -> None:
 				"has_variants": item.has_variants,
 			}
 		)
-		ecommerce_item.insert()
+		ecommerce_item.save()
