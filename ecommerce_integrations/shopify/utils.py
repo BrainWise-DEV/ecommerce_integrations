@@ -30,6 +30,7 @@ def get_user_company(user):
 
 def get_user_shopify_account():
     user = frappe.session.user
+    print("get_user_shopify_account called for user ", user)
     existing_permission = frappe.db.exists("User Permission", {"user": user, "allow": "Company"})
     has_company = bool(existing_permission)
     if has_company:
@@ -139,4 +140,4 @@ def _create_ecommerce_items(items: list[_dict]) -> None:
 				"has_variants": item.has_variants,
 			}
 		)
-        ecommerce_item.save()
+		ecommerce_item.save()
