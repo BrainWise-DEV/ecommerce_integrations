@@ -357,7 +357,7 @@ def upload_erpnext_item(doc, method=None):
 		setting = get_user_shopify_account()
 
 	if not setting:
-		msgprint(_("Could not find Shopify Account for uploading item."))
+		# msgprint(_("Could not find Shopify Account for uploading item."))
 		return
 
 	if not setting.is_enabled() or not setting.upload_erpnext_items:
