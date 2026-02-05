@@ -47,7 +47,6 @@ def get_company_shopify_account(company):
             return account
         return None
     except Exception as e:
-        print("Error getting Shopify account for company ", company, " error: ", e)
         return None
 
 
