@@ -164,8 +164,18 @@ class ShopifyAccount(SettingController):
 			else:
 				password = self._get_password_safe("password")
 
-			if password:
-				connection.unregister_webhooks(self.shopify_url, password)
+			# Only call Shopify when there is something to unregister, and never let the call
+			# block the save: a disabled account is how credentials get corrected, and with
+			# wrong ones a 401 here refused exactly the save that would fix them.
+			if password and self.webhooks:
+				try:
+					connection.unregister_webhooks(self.shopify_url, password)
+				except Exception:
+					frappe.log_error(title=_("Shopify: unregistering webhooks failed"))
+					frappe.msgprint(
+						_("Could not unregister the webhooks from Shopify. Remove them in the Shopify admin if they remain."),
+						alert=True,
+					)
 
 			self.webhooks = list()  # remove all webhooks
 
@@ -352,5 +362,19 @@ def setup_custom_fields():
 			),
 		],
 	}
+
+	# Item, Customer and Item Group carry the company an account works for: the product and
+	# customer sync write it, and Ecommerce Item fetches it from Item. Without the field,
+	# inserting an Ecommerce Item fails on a fresh site with "Unknown column 'custom_company'".
+	company_field = dict(
+		fieldname="custom_company",
+		label="Company",
+		fieldtype="Link",
+		options="Company",
+		read_only=1,
+		print_hide=1,
+	)
+	for doctype in ("Item", "Customer", "Item Group"):
+		custom_fields.setdefault(doctype, []).append(company_field)
 
 	create_custom_fields(custom_fields)
